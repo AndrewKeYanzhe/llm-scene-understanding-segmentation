@@ -8,12 +8,15 @@ import cv2
 from matplotlib import image as mpimg
 import numpy as np
 
+from scipy.ndimage import zoom
+
 
 processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
 model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
 
 def process_image(image, prompt):
-  
+  print(image.size)
+  w,h=image.size
   inputs = processor(text=prompt, images=image, padding="max_length", return_tensors="pt")
   
   # predict
@@ -22,15 +25,34 @@ def process_image(image, prompt):
     preds = outputs.logits
   
   filename = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\mask.png"
-  plt.imsave(filename, torch.sigmoid(preds))
+  mask_array = torch.sigmoid(preds)
+
+  original_h, original_w = mask_array.shape
+
+  zoom_factors = (h / original_h, w / original_w)
+
+  # Interpolate the array
+  interpolated_array = zoom(mask_array, zoom_factors)
+
+
+  # plt.imsave(filename, torch.sigmoid(preds))
+  plt.imsave(filename, interpolated_array)
+
+
+
   # cv2.imshow("mask", torch.sigmoid(preds))
   # mask = torch.sigmoid(preds)
   # mask.show()
   mask_img = mpimg.imread(filename)
 
 
+
   plt.imshow(image)
+  # plt.imshow(image, cmap='jet', alpha=0.5, aspect=h/w)
   plt.imshow(mask_img, cmap='jet', alpha=0.5)
+  # plt.imshow(mask_img)
+  # plt.gca().set_aspect(h/w)
+
   # plt.imshow(mask_img)
   plt.show()
   
