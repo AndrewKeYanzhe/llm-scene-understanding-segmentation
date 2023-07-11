@@ -1,20 +1,29 @@
-from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation
+import time
+t0 = time.time()
+from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation #this takes 13s
+print(time.time()-t0)
 # import gradio as gr
 from PIL import Image
 import torch
 import matplotlib.pyplot as plt
 import cv2
 
+
+
 from matplotlib import image as mpimg
 import numpy as np
 
 from scipy.ndimage import zoom
 
-
+t0 = time.time()
 processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
 model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
+t1 = time.time()
+print(t1-t0)
 
 def process_image(image, prompt):
+  t0 = time.time()
+
   print(image.size)
   w,h=image.size
   inputs = processor(text=prompt, images=image, padding="max_length", return_tensors="pt")
@@ -52,6 +61,9 @@ def process_image(image, prompt):
   plt.imshow(mask_img, cmap='jet', alpha=0.5)
   # plt.imshow(mask_img)
   # plt.gca().set_aspect(h/w)
+
+  t1 = time.time()
+  print(t1-t0)
 
   # plt.imshow(mask_img)
   plt.show()
