@@ -83,7 +83,7 @@ model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-
 
 
 
-model.to(device)
+# model.to(device)
 
 t1 = time.time()
 print(t1-t0)
@@ -92,7 +92,7 @@ print("\n\n\n")
 t0 = time.time()
 prompt = "Question: " +user_input +"? Answer:"
 ##inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
-inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
+inputs = processor(images=image, text=prompt, return_tensors="pt").to("cuda", torch.float16)
 
 
 
@@ -147,7 +147,7 @@ while True:
     print(prompt)
     t0 = time.time()
 
-    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
+    inputs = processor(images=image, text=prompt, return_tensors="pt").to("cuda", torch.float16)
     # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
 
     generated_ids = model.generate(**inputs)
