@@ -73,19 +73,18 @@ device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 ##)
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip2-flan-t5-xl")
-model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xl")
+model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xl", load_in_8bit=True, device_map="auto")
 
 
 
-
-model.to(device)
+# model.to(device)
 
 
 print("\n\n\n")
 t0 = time.time()
 prompt = "Question: " +user_input +"? Answer:"
 ##inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
-inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
+inputs = processor(image, prompt, return_tensors="pt").to("cuda", torch.float16)
 
 generated_ids = model.generate(**inputs)
 generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
@@ -112,7 +111,7 @@ while True:
     t0 = time.time()
 
     ##inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
-    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
+    inputs = processor(image, prompt, return_tensors="pt").to("cuda", torch.float16)
 
     generated_ids = model.generate(**inputs)
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
