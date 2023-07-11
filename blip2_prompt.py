@@ -26,6 +26,7 @@ with open(file_path, 'r') as file:
     data = file.read().rstrip().replace('"', '')
 print(data)
 
+t0 = time.time()
 
 
 
@@ -53,7 +54,8 @@ user_input = "What is this a picture of"
 ##display(raw_image.resize((596, 437)))
 
 # setup device to use
-device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
+# device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
+device = "cpu"
 
 """#### Load pretrained/finetuned BLIP2 captioning model"""
 
@@ -80,8 +82,10 @@ model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-
 
 model.to(device)
 
-
+t1 = time.time()
+print(t1-t0)
 print("\n\n\n")
+
 t0 = time.time()
 prompt = "Question: " +user_input +"? Answer:"
 ##inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
@@ -94,6 +98,7 @@ t1 = time.time()
 print(t1-t0)
     
 while True:
+    print("\n")
     user_input = input("Enter question:\n")
 
     file_path = r"C:\Users\kyanzhe\Downloads\blip2\image_path.txt"  # Use raw string for file path
@@ -106,8 +111,9 @@ while True:
     image = Image.open(img_path).convert('RGB')
 
 
-##    prompt = "Question: " +user_input +"? Answer:"
+    # prompt = "Question: " +user_input +"? Answer:"
     prompt = user_input
+    print(prompt)
 
     t0 = time.time()
 
