@@ -26,7 +26,7 @@ with open(file_path, 'r') as file:
     data = file.read().rstrip().replace('"', '')
 print(data)
 
-
+t0 = time.time()
 
 
 
@@ -75,7 +75,8 @@ device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 processor = BlipProcessor.from_pretrained("Salesforce/blip2-flan-t5-xl")
 model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xl", load_in_8bit=True, device_map="auto")
 
-
+t1 = time.time()
+print(t1-t0)
 
 # model.to(device)
 
@@ -105,8 +106,8 @@ while True:
     image = Image.open(img_path).convert('RGB')
 
 
-    prompt = "Question: " +user_input +"? Answer:"
-    # prompt = user_input
+    # prompt = "Question: " +user_input +"? Answer:"
+    prompt = user_input
     print(prompt)
 
     t0 = time.time()
