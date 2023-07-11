@@ -10,22 +10,27 @@ import numpy as np
 
 from scipy.ndimage import zoom
 
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
 
 processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
 model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
+model     = model.to(device)
 
 def process_image(image, prompt):
   print(image.size)
   w,h=image.size
-  inputs = processor(text=prompt, images=image, padding="max_length", return_tensors="pt")
+  inputs = processor(text=prompt, images=image, padding="max_length", return_tensors="pt").to(device)
   
+
+
   # predict
   with torch.no_grad():
     outputs = model(**inputs)
     preds = outputs.logits
   
   filename = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\mask.png"
-  mask_array = torch.sigmoid(preds)
+  mask_array = torch.sigmoid(preds).cpu()
 
   original_h, original_w = mask_array.shape
 
