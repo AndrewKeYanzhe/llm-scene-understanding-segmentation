@@ -105,8 +105,9 @@ while True:
     image = Image.open(img_path).convert('RGB')
 
 
-##    prompt = "Question: " +user_input +"? Answer:"
-    prompt = user_input
+    prompt = "Question: " +user_input +"? Answer:"
+    # prompt = user_input
+    print(prompt)
 
     t0 = time.time()
 
