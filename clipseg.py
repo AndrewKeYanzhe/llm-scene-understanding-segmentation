@@ -2,7 +2,7 @@ import time
 t0 = time.time()
 from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation #this takes 13s
 t1 = time.time()
-print("import time "+str(time.time()-t0))# import gradio as gr
+print("import time "+str(time.time()-t0))
 from PIL import Image
 import torch
 import matplotlib.pyplot as plt
@@ -65,6 +65,9 @@ def process_image(image, prompt):
   t1 = time.time()
   print("inference time "+str(time.time()-t0)) #1.3s on cpu, 2.3s on gpu
 
+  plt.rcParams['keymap.quit'].append(' ') #default is q. now you can close with spacebar
+
+
   # plt.imshow(mask_img)
   plt.show()
   
@@ -97,4 +100,5 @@ examples = [[r"C:\Users\kyanzhe\Downloads\download (3).jfif", "wood"]]
                      
 # interface.launch(debug=True)
 
-process_image( Image.open(r"C:\Users\kyanzhe\Downloads\download (3).jfif").convert('RGB'),"man in blue shirt")
+# process_image( Image.open(r"C:\Users\kyanzhe\Downloads\download (3).jfif").convert('RGB'),"man in blue shirt")
+process_image( Image.open(r"C:\Users\kyanzhe\Downloads\t688.jpg").convert('RGB'),"car on the left")

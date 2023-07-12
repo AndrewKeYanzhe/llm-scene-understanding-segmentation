@@ -222,4 +222,6 @@ while True:
         print("clipseg inference time "+str(time.time()-t0)) #1.3s on cpu, 2.3s on gpu
 
         # plt.imshow(mask_img)
+        plt.rcParams['keymap.quit'].append(' ') #default is q. now you can close with spacebar
+
         plt.show()
