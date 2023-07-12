@@ -11,12 +11,12 @@ from matplotlib import image as mpimg
 import numpy as np
 from scipy.ndimage import zoom
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 t0 = time.time()
 processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
-model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
-model     = model.to(device)
+model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined").to(device)
+
 t1 = time.time()
 print("model load time "+str(time.time()-t0))
 
