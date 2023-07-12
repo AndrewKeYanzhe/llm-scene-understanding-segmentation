@@ -42,6 +42,14 @@ def process_image(image, prompt):
   # Interpolate the array
   interpolated_array = zoom(mask_array, zoom_factors)
 
+  # print(interpolated_array)
+
+  max_coordinates_pixel = np.unravel_index(np.argmax(interpolated_array), interpolated_array.shape)
+  max_coordinates_percent = [max_coordinates_pixel[0]/interpolated_array.shape[0],max_coordinates_pixel[1]/interpolated_array.shape[1]]
+  print(max_coordinates_percent)
+  print("vertical, horizontal")
+
+  
 
   # plt.imsave(filename, torch.sigmoid(preds))
   plt.imsave(filename, interpolated_array)
@@ -61,8 +69,18 @@ def process_image(image, prompt):
   # plt.imshow(mask_img)
   # plt.gca().set_aspect(h/w)
 
-  t1 = time.time()
-  t1 = time.time()
+  y, x = max_coordinates_percent
+  height, width = interpolated_array.shape
+  max_coordinates = (int(y * height), int(x * width))
+
+  # Plot the mask_img
+  # plt.imshow(interpolated_array, cmap='gray')
+
+  # Plot the point with a marker (e.g., red circle)
+  plt.plot(max_coordinates[1], max_coordinates[0], 'ro')
+
+  
+
   print("inference time "+str(time.time()-t0)) #1.3s on cpu, 2.3s on gpu
 
   plt.rcParams['keymap.quit'].append(' ') #default is q. now you can close with spacebar
@@ -100,5 +118,5 @@ examples = [[r"C:\Users\kyanzhe\Downloads\download (3).jfif", "wood"]]
                      
 # interface.launch(debug=True)
 
-# process_image( Image.open(r"C:\Users\kyanzhe\Downloads\download (3).jfif").convert('RGB'),"man in blue shirt")
-process_image( Image.open(r"C:\Users\kyanzhe\Downloads\t688.jpg").convert('RGB'),"car on the left")
+process_image( Image.open(r"C:\Users\kyanzhe\Downloads\download (3).jfif").convert('RGB'),"man in blue shirt")
+# process_image( Image.open(r"C:\Users\kyanzhe\Downloads\t688.jpg").convert('RGB'),"car on the left")
