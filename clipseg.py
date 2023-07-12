@@ -1,4 +1,7 @@
-from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation
+import time
+t0 = time.time()
+from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation #this takes 13s
+print("import time "+str(time.time()-t0))
 from PIL import Image
 import torch
 import matplotlib.pyplot as plt
@@ -10,12 +13,15 @@ from scipy.ndimage import zoom
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-
+t0 = time.time()
 processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
 model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
 model     = model.to(device)
+t1 = time.time()
+print("model load time "+str(time.time()-t0))
 
 def process_image(image, prompt):
+  t0 = time.time()
   print(image.size)
   w,h=image.size
   inputs = processor(text=prompt, images=image, padding="max_length", return_tensors="pt").to(device)
@@ -26,6 +32,9 @@ def process_image(image, prompt):
   with torch.no_grad():
     outputs = model(**inputs)
     preds = outputs.logits
+
+  t1 = time.time()
+  print("inference time "+str(time.time()-t0)) #2.3s on gpu
   
   filename = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\mask.png"
   mask_array = torch.sigmoid(preds).cpu()
@@ -44,11 +53,14 @@ def process_image(image, prompt):
 
   mask_img = mpimg.imread(filename)
 
+  
 
 
   plt.imshow(image)
   plt.imshow(mask_img, cmap='jet', alpha=0.5)
   plt.show()
+
+  
   
   # # img2 = cv2.imread(filename)
   # # gray_image = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
