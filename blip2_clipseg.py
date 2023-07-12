@@ -163,8 +163,12 @@ while True:
     search_object = generated_text
 
     ##--------------
-
-    prompt = 'Only answer yes if the entire sentence is correct. Sentence: "In this image there is '+search_object+'" Answer: '
+    if re.search(r'\bin\b', search_object, flags=re.IGNORECASE):
+        prompt = 'Only answer yes if the entire sentence is correct. Sentence: "In this image there is '+search_object+'" Answer: '
+    else:
+        if search_object.startswith("a "):
+            search_object = search_object[2:]
+        prompt = 'In this image, is there a "' + search_object +    '"? Answer:'
     print(prompt)
     t0 = time.time()
 
