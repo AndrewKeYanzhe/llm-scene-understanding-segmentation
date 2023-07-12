@@ -1,5 +1,4 @@
 from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation
-# import gradio as gr
 from PIL import Image
 import torch
 import matplotlib.pyplot as plt
@@ -7,7 +6,6 @@ import cv2
 
 from matplotlib import image as mpimg
 import numpy as np
-
 from scipy.ndimage import zoom
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -37,28 +35,19 @@ def process_image(image, prompt):
   zoom_factors = (h / original_h, w / original_w)
 
   # Interpolate the array
-  interpolated_array = zoom(mask_array, zoom_factors)
+  interpolated_array = zoom(mask_array, zoom_factors) #scale output mask to same size as input image
 
 
   # plt.imsave(filename, torch.sigmoid(preds))
   plt.imsave(filename, interpolated_array)
 
 
-
-  # cv2.imshow("mask", torch.sigmoid(preds))
-  # mask = torch.sigmoid(preds)
-  # mask.show()
   mask_img = mpimg.imread(filename)
 
 
 
   plt.imshow(image)
-  # plt.imshow(image, cmap='jet', alpha=0.5, aspect=h/w)
   plt.imshow(mask_img, cmap='jet', alpha=0.5)
-  # plt.imshow(mask_img)
-  # plt.gca().set_aspect(h/w)
-
-  # plt.imshow(mask_img)
   plt.show()
   
   # # img2 = cv2.imread(filename)
@@ -80,14 +69,5 @@ article = "<p style='text-align: center'><a href='https://arxiv.org/abs/2112.100
 
 examples = [[r"C:\Users\kyanzhe\Downloads\download (3).jfif", "wood"]]
    
-# interface = gr.Interface(fn=process_image, 
-#                      inputs=[gr.Image(type="pil"), gr.Textbox(label="Please describe what you want to identify")],
-#                      outputs=gr.Image(type="pil"),
-#                      title=title,
-#                      description=description,
-#                      article=article,
-#                      examples=examples)
-                     
-# interface.launch(debug=True)
 
 process_image( Image.open(r"C:\Users\kyanzhe\Downloads\download (3).jfif").convert('RGB'),"man in blue shirt")
