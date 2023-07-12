@@ -155,9 +155,9 @@ while True:
     pattern = re.compile(r'next', re.IGNORECASE)
     generated_text = pattern.sub('', generated_text)
 
-    generated_text = " "+generated_text
-    pattern = re.compile(r' the ', re.IGNORECASE)
-    generated_text = pattern.sub(' a ', generated_text).strip()
+    # generated_text = " "+generated_text
+    pattern = r'\bthe\b(?! (?:left|right)\b)'
+    generated_text = re.sub(pattern, 'a', generated_text)
 
     search_object = generated_text
 
