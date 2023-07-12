@@ -133,7 +133,7 @@ while True:
 
 ##    prompt = "Question: " +user_input +"? Answer:"
 ##    prompt = user_input
-    prompt = 'Imagine that the image is blank. In the sentence "'+user_input+'", what are we looking for?'
+    prompt = 'Imagine that the image is blank. In the sentence "'+user_input+'", omit the position. What are we looking for?'
     print(prompt)
     
     t0 = time.time()
@@ -149,8 +149,9 @@ while True:
     print("prompt processing time "+ str(time.time()-t0))
 
 
+    #----------------rephrase objects to find
     pattern = re.compile(r'people', re.IGNORECASE)
-    generated_text = pattern.sub('a man or woman', generated_text)
+    generated_text = pattern.sub('a person', generated_text)
 
     pattern = re.compile(r'next', re.IGNORECASE)
     generated_text = pattern.sub('', generated_text)
