@@ -19,7 +19,6 @@ t0 = time.time()
 processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
 model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
 t1 = time.time()
-t1 = time.time()
 print("model load time "+str(time.time()-t0))
 def process_image(image, prompt):
   t0 = time.time()

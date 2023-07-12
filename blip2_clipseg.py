@@ -10,9 +10,13 @@ Original file is located at
 """
 
 import re
-
-
 import time
+import matplotlib.pyplot as plt
+import cv2
+from matplotlib import image as mpimg
+import numpy as np
+from scipy.ndimage import zoom
+
 import sys
 if 'google.colab' in sys.modules:
     print('Running in Colab.')
@@ -23,7 +27,13 @@ from PIL import Image
 import requests
 ##from lavis.models import load_model_and_preprocess
 
-from transformers import BlipProcessor, Blip2Processor, Blip2ForConditionalGeneration
+
+t0 = time.time()
+from transformers import BlipProcessor, Blip2ForConditionalGeneration, CLIPSegProcessor, CLIPSegForImageSegmentation
+# from transformers import BlipProcessor, Blip2Processor, Blip2ForConditionalGeneration, CLIPSegProcessor, CLIPSegForImageSegmentation
+t1 = time.time()
+print("import time "+str(time.time()-t0))
+
 
 file_path = r"C:\Users\kyanzhe\Downloads\blip2\image_path.txt"  # Use raw string for file path
 with open(file_path, 'r') as file:
@@ -76,10 +86,15 @@ device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 ##    "Salesforce/blip2-opt-2.7b", torch_dtype=torch.float32
 ##)
 
+t0 = time.time()
 processor = BlipProcessor.from_pretrained("Salesforce/blip2-flan-t5-xl")
 model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-flan-t5-xl", load_in_8bit=True, device_map="auto")
 
 
+clipseg_processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
+clipseg_model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
+t1 = time.time()
+print("model load time "+str(time.time()-t0))
 
 
 
@@ -131,8 +146,8 @@ while True:
     
 
     print(generated_text)
-    t1 = time.time()
-    print(t1-t0)
+    print("prompt processing time "+ str(time.time()-t0))
+
 
     pattern = re.compile(r'people', re.IGNORECASE)
     generated_text = pattern.sub('a man or woman', generated_text)
@@ -160,6 +175,51 @@ while True:
     
 
     print(generated_text)
-    t1 = time.time()
-    print(t1-t0)
-    
+    print("blip2 inference time "+ str(time.time()-t0))
+
+    #clipseg--------------------------------------------
+    if re.search(r'\byes\b', generated_text, flags=re.IGNORECASE):
+        t0 = time.time()
+        print(image.size)
+        w,h=image.size
+
+        clipseg_inputs = clipseg_processor(text=search_object, images=image, padding="max_length", return_tensors="pt")
+        
+        with torch.no_grad(): #grad probably means gradient, is a tensor thing?
+            outputs = clipseg_model(**clipseg_inputs)
+            preds = outputs.logits
+
+        filename = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\mask.png"
+        mask_array = torch.sigmoid(preds)
+
+        original_h, original_w = mask_array.shape
+
+        zoom_factors = (h / original_h, w / original_w)
+
+        # Interpolate the array
+        interpolated_array = zoom(mask_array, zoom_factors)
+
+
+        # plt.imsave(filename, torch.sigmoid(preds))
+        plt.imsave(filename, interpolated_array)
+
+
+
+        # cv2.imshow("mask", torch.sigmoid(preds))
+        # mask = torch.sigmoid(preds)
+        # mask.show()
+        mask_img = mpimg.imread(filename)
+
+
+
+        plt.imshow(image)
+        # plt.imshow(image, cmap='jet', alpha=0.5, aspect=h/w)
+        plt.imshow(mask_img, cmap='jet', alpha=0.5)
+        # plt.imshow(mask_img)
+        # plt.gca().set_aspect(h/w)
+
+        
+        print("clipseg inference time "+str(time.time()-t0)) #1.3s on cpu, 2.3s on gpu
+
+        # plt.imshow(mask_img)
+        plt.show()
