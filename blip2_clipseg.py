@@ -133,7 +133,7 @@ while True:
 
 ##    prompt = "Question: " +user_input +"? Answer:"
 ##    prompt = user_input
-    prompt = 'Imagine that the image is blank. In the sentence "'+user_input+'", omit the position. What are we looking for?'
+    prompt = 'Imagine that the image is blank. In the sentence "'+user_input+'", what are we looking for?'
     print(prompt)
     
     t0 = time.time()
@@ -180,6 +180,11 @@ while True:
 
     #clipseg--------------------------------------------
     if re.search(r'\byes\b', generated_text, flags=re.IGNORECASE):
+        pattern = re.compile(r"\b(on the (left|right))\b", re.IGNORECASE)
+
+        # Use the `sub` method of the pattern object to replace any matches with an empty string
+        search_object = pattern.sub("", search_object)
+
         t0 = time.time()
         print(image.size)
         w,h=image.size
