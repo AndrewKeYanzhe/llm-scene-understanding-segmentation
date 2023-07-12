@@ -128,7 +128,7 @@ while True:
 
     img_path = data
 
-    image = Image.open(img_path).convert('RGB')
+    image = Image.open(img_path).convert('RGB') #doesnt work with .avif
 
 
 ##    prompt = "Question: " +user_input +"? Answer:"
@@ -200,6 +200,10 @@ while True:
         # Interpolate the array
         interpolated_array = zoom(mask_array, zoom_factors)
 
+        max_coordinates_pixel = np.unravel_index(np.argmax(interpolated_array), interpolated_array.shape)
+        max_coordinates_percent = [max_coordinates_pixel[0]/interpolated_array.shape[0],max_coordinates_pixel[1]/interpolated_array.shape[1]]
+        print(max_coordinates_percent)
+        print("vertical, horizontal")
 
         # plt.imsave(filename, torch.sigmoid(preds))
         plt.imsave(filename, interpolated_array)
@@ -218,6 +222,17 @@ while True:
         plt.imshow(mask_img, cmap='jet', alpha=0.5)
         # plt.imshow(mask_img)
         # plt.gca().set_aspect(h/w)
+
+        y, x = max_coordinates_percent
+        height, width = interpolated_array.shape
+        max_coordinates = (int(y * height), int(x * width))
+
+        # Plot the mask_img
+        # plt.imshow(interpolated_array, cmap='gray')
+
+        # Plot the point with a marker (e.g., red circle)
+        plt.plot(max_coordinates[1], max_coordinates[0], 'ro')
+
 
         
         print("clipseg inference time "+str(time.time()-t0)) #1.3s on cpu, 2.3s on gpu
