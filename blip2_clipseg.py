@@ -137,11 +137,11 @@ while True:
     Instruction: search this floor for people
     Answer: people
     Instruction: Go ahead until the next junction
-    Answer: junction
+    Answer: a junction
     Instruction: find the man in the blue shirt
-    Answer: man in a blue shirt
+    Answer: a man in a blue shirt
     Instruction: go to the red car in the car park
-    Answer: red car
+    Answer: a red car
     Instruction: """ + user_input + " Answer: "
 
     print(prompt)
@@ -176,9 +176,9 @@ while True:
     if re.search(r'\bin\b', search_object, flags=re.IGNORECASE):
         prompt = 'Only answer yes if the entire sentence is correct. Sentence: "In this image there is '+search_object+'" Answer: '
     else:
-        if search_object.startswith("a "):
-            search_object = search_object[2:]
-        prompt = 'In this image, is there a "' + search_object +    '"? Answer:'
+        # if search_object.startswith("a "):
+        #     search_object = search_object[2:]
+        prompt = 'In this image, is there "' + search_object +    '"? Answer:'
     print(prompt)
     t0 = time.time()
 
