@@ -178,7 +178,8 @@ while True:
     else:
         # if search_object.startswith("a "):
         #     search_object = search_object[2:]
-        prompt = 'In this image, is there "' + search_object +    '"? Answer:'
+        clarify_object = re.sub(r'\bman\b', 'male', search_object)
+        prompt = 'In this image, is there "' + clarify_object +    '"? Answer:'
     print(prompt)
     t0 = time.time()
 
