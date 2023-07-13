@@ -133,7 +133,17 @@ while True:
 
 ##    prompt = "Question: " +user_input +"? Answer:"
 ##    prompt = user_input
-    prompt = 'Imagine that the image is blank. In the sentence "'+user_input+'", what are we looking for?'
+    prompt = """
+    Instruction: search this floor for people
+    Answer: people
+    Instruction: Go ahead until the next junction
+    Answer: junction
+    Instruction: find the man in the blue shirt
+    Answer: man in a blue shirt
+    Instruction: go to the red car in the car park
+    Answer: red car
+    Instruction: """ + user_input + " Answer: "
+
     print(prompt)
     
     t0 = time.time()
