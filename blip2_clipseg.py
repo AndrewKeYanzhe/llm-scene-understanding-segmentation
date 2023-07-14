@@ -161,7 +161,7 @@ while True:
 
     #----------------rephrase objects to find
     pattern = re.compile(r'people', re.IGNORECASE)
-    generated_text = pattern.sub('a person', generated_text)
+    generated_text = pattern.sub('a human', generated_text)
 
     pattern = re.compile(r'next', re.IGNORECASE)
     generated_text = pattern.sub('', generated_text)
