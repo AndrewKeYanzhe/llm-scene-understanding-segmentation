@@ -81,4 +81,18 @@ def process_image(image, prompt):
   
 
   
-process_image( Image.open(r"C:\Users\kyanzhe\Downloads\download (3).jfif").convert('RGB'),"man in blue shirt")
+
+
+while True:
+  print("\n")
+  user_input = input("Enter question:\n")
+
+  file_path = r"C:\Users\kyanzhe\Downloads\blip2\image_path.txt"  # Use raw string for file path
+  with open(file_path, 'r') as file:
+      data = file.read().rstrip().replace('"', '')
+  print(data)
+
+  img_path = data
+
+  image = Image.open(img_path).convert('RGB') #doesnt work with .avif
+  process_image( image,user_input)
