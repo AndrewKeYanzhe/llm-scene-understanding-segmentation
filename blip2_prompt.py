@@ -91,8 +91,11 @@ while True:
     ##inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
     inputs = processor(image, prompt, return_tensors="pt").to("cuda", torch.float16)
 
-    generated_ids = model.generate(**inputs)
+    # generated_ids = model.generate(**inputs) # default for short prompt replies TODO
+    generated_ids = model.generate(**inputs, num_beams=5, max_new_tokens=300, repetition_penalty=3.0, length_penalty=3, temperature=1) #penalty has to be a float. Decent values for great wall of china flant5xl. replicates blip2 paper
+
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+    # generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0].strip() #this does not help
     
 
     print(generated_text)
