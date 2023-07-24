@@ -93,13 +93,25 @@ while True:
 
     ##inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
     inputs = processor(image, prompt, return_tensors="pt").to("cuda", torch.float16)
-
-    # generated_ids = model.generate(**inputs) # default for short prompt replies TO
     
-    generated_ids = model.generate(**inputs, num_beams=5, max_new_tokens=300, repetition_penalty=3.0, length_penalty=3, temperature=1) #penalty has to be a float. Decent values for great wall of china flant5xl. replicates blip paper
-    # however penalty of 1.5 and above is not recommended https://discuss.huggingface.co/t/transformers-repetition-penalty-parameter/43638/3
-    #huggingface demo has penalty 0-5 slider
-    #huggingface demo has length penalty -1 to 2
+    # default for short prompt replies TODO
+    generated_ids = model.generate(**inputs) 
+
+
+
+    # #attempt at longer replies, like the blip2 paper
+    # generated_ids = model.generate(**inputs, num_beams=5, max_new_tokens=300, repetition_penalty=3.0, length_penalty=3, temperature=1, return_dict_in_generate=True, output_scores=True)  
+    # #penalty has to be a float. Decent values for great wall of china flant5xl. replicates blip paper
+    # # however penalty of 1.5 and above is not recommended https://discuss.huggingface.co/t/transformers-repetition-penalty-parameter/43638/3
+    # #huggingface demo has penalty 0-5 slider
+    # #huggingface demo has length penalty -1 to 2
+
+    # #attempt to output confidence
+    # generated_ids = model.generate(**inputs, return_dict_in_generate=True, output_scores=True)  
+    # transition_scores = model.compute_transition_scores(generated_ids.sequences, generated_ids.scores, normalize_logits=True)
+    # transition_proba = np.exp(transition_scores)
+    # print(transition_proba)
+    # #error, blip2 has no vocab_size attribute
 
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
     # generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0].strip() #this does not help
