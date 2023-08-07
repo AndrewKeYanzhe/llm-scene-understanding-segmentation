@@ -9,7 +9,7 @@ from lavis.models import load_model_and_preprocess
 from transformers import BlipProcessor, Blip2Processor, Blip2ForConditionalGeneration, BitsAndBytesConfig
 
 
-file_path = r"C:\Users\kyanzhe\Downloads\blip2\image_path.txt"  # Use raw string for file path
+file_path = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\image_path.txt"  # Use raw string for file path
 with open(file_path, 'r') as file:
     img_path = file.read().rstrip().replace('"', '')
 print(img_path)
@@ -75,7 +75,7 @@ print(t1-t0)
 while True:
     user_input = input("Enter question:\n")
 
-    file_path = r"C:\Users\kyanzhe\Downloads\blip2\image_path.txt"  # Use raw string for file path
+    file_path = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\image_path.txt"  # Use raw string for file path
     with open(file_path, 'r') as file:
         data = file.read().rstrip().replace('"', '')
     print(data)
