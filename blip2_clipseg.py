@@ -131,8 +131,7 @@ while True:
     image = Image.open(img_path).convert('RGB') #doesnt work with .avif
 
 
-##    prompt = "Question: " +user_input +"? Answer:"
-##    prompt = user_input
+    #get search object-------------------
     prompt = """
     Instruction: search this floor for people
     Answer: people
@@ -152,6 +151,35 @@ while True:
     # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
 
     generated_ids = model.generate(**inputs)
+    search_object = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+    
+
+    print(search_object)
+    #get search object-------------------
+
+
+
+##    prompt = "Question: " +user_input +"? Answer:"
+##    prompt = user_input
+    prompt = """
+    Instruction: find the man in the blue shirt
+    Question: Is there a man in a blue shirt?
+    Instruction: search this floor for people
+    Question: Are there people?
+    Instruction: Go ahead until the next junction
+    Question: Is there a traffic junction?
+    Instruction: go to the red car in the car park
+    Question: Is there a red car?
+    Instruction: """ + user_input + " Question: "
+
+    print(prompt)
+    
+    t0 = time.time()
+
+    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
+    # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
+
+    generated_ids = model.generate(**inputs)
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
     
 
@@ -159,29 +187,36 @@ while True:
     print("prompt processing time "+ str(time.time()-t0))
 
 
-    #----------------rephrase objects to find
-    pattern = re.compile(r'people', re.IGNORECASE)
-    generated_text = pattern.sub('a human', generated_text)
+    # #----------------rephrase objects to find
+    # pattern = re.compile(r'people', re.IGNORECASE)
+    # generated_text = pattern.sub('a human', generated_text)
 
-    pattern = re.compile(r'next', re.IGNORECASE)
-    generated_text = pattern.sub('', generated_text)
+    # pattern = re.compile(r'next', re.IGNORECASE)
+    # generated_text = pattern.sub('', generated_text)
 
-    # generated_text = " "+generated_text
-    pattern = r'\bthe\b(?! (?:left|right)\b)'
-    generated_text = re.sub(pattern, 'a', generated_text)
+    # # # generated_text = " "+generated_text
+    # # pattern = r'\bthe\b(?! (?:left|right)\b)'
+    # # generated_text = re.sub(pattern, 'a', generated_text)
 
-    search_object = generated_text
+    # search_object = generated_text
 
-    ##--------------
-    if re.search(r'\bin\b', search_object, flags=re.IGNORECASE):
-        prompt = 'Only answer yes if the entire sentence is correct. Sentence: "In this image there is '+search_object+'" Answer: '
-    else:
-        # if search_object.startswith("a "):
-        #     search_object = search_object[2:]
-        clarify_object = re.sub(r'\bman\b', 'male', search_object)
-        prompt = 'In this image, is there "' + clarify_object +    '"? Answer:'
-    print(prompt)
+    # ##--------------integrate object into qn
+    # if re.search(r'\bin\b', search_object, flags=re.IGNORECASE):
+    #     prompt = 'Only answer yes if the entire sentence is correct. Sentence: "In this image there is '+search_object+'" Answer: '
+    # else:
+    #     # if search_object.startswith("a "):
+    #     #     search_object = search_object[2:]
+    #     clarify_object = re.sub(r'\bman\b', 'male', search_object)
+    #     prompt = 'In this image, is there "' + clarify_object +    '"? Answer:'
+
+    # print(prompt)
+    # ##--------------finished making new prompt
+    
     t0 = time.time()
+
+    prompt= "Question: " + generated_text + " Answer: "
+
+    print(prompt)
 
     inputs = processor(images=image, text=prompt, return_tensors="pt").to("cuda", torch.float16)
     # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
