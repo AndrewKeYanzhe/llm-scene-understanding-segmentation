@@ -163,13 +163,13 @@ while True:
 ##    prompt = user_input
     prompt = """
     Instruction: find the man in the blue shirt
-    Question: Is there a man in a blue shirt?
+    Question: In this image, is there a man in a blue shirt?
     Instruction: search this floor for people
-    Question: Are there people?
+    Question: In this image, are there people?
     Instruction: Go ahead until the next junction
-    Question: Is there a traffic junction?
+    Question: In this image, is there a traffic junction?
     Instruction: go to the red car in the car park
-    Question: Is there a red car?
+    Question: In this image, is there a red car?
     Instruction: """ + user_input + " Question: "
 
     print(prompt)
