@@ -295,4 +295,12 @@ while True:
         # plt.imshow(mask_img)
         plt.rcParams['keymap.quit'].append(' ') #default is q. now you can close with spacebar
 
+        plt.axis('off')
+
+        # Save the plot without axes
+        plt.savefig('annotated.png', bbox_inches='tight', pad_inches=0)
+
+        # Show the plot (optional)
+        plt.axis('on')
+
         plt.show()
