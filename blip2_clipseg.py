@@ -86,46 +86,19 @@ print(generated_text)
     
 while True:
     print("\n")
+
     user_input = input("Enter question:\n")
 
     file_path = r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\image_path.txt" # Use raw string for file path    
     with open(file_path, 'r') as file:
         img_path = file.read().rstrip().replace('"', '')
     print(img_path)
-
     image = Image.open(img_path).convert('RGB') #doesnt work with .avif
 
 
-    #get search object-------------------
-    prompt = """
-    Instruction: search this floor for people
-    Answer: people
-    Instruction: Go ahead until the next junction
-    Answer: a junction
-    Instruction: find the man in the blue shirt
-    Answer: a man in a blue shirt
-    Instruction: go to the red car in the car park
-    Answer: a red car
-    Instruction: """ + user_input + " Answer: "
 
-    print(prompt)
-    
+    #generate verification question-------------------
     t0 = time.time()
-
-    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
-    # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
-
-    generated_ids = model.generate(**inputs)
-    search_object = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
-    
-
-    print(search_object)
-    #get search object-------------------
-
-
-
-##    prompt = "Question: " +user_input +"? Answer:"
-##    prompt = user_input
     prompt = """
     Instruction: find the man in the blue shirt
     Question: Is there a man in a blue shirt?
@@ -139,7 +112,7 @@ while True:
 
     print(prompt)
     
-    t0 = time.time()
+    
 
     inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
     # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
@@ -149,7 +122,43 @@ while True:
     
 
     print(generated_text)
-    print("prompt processing time "+ str(time.time()-t0))
+    print("generate verification question "+ str(time.time()-t0))
+    #finish generating verification question------------------------
+
+
+
+    #get search object-------------------
+    t0 = time.time()
+    prompt = """
+    Instruction: search this floor for people
+    Answer: people
+    Instruction: Go ahead until the next junction
+    Answer: a junction
+    Instruction: find the man in the blue shirt
+    Answer: a man in a blue shirt
+    Instruction: go to the red car in the car park
+    Answer: a red car
+    Instruction: """ + user_input + " Answer: "
+
+    print(prompt)
+    
+    
+
+    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
+    # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
+
+    generated_ids = model.generate(**inputs)
+    search_object = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+    
+
+    print(search_object)
+    print("extract search object "+ str(time.time()-t0))
+    #finish getting search object-----------------------
+    
+    
+
+
+
 
 
     # #----------------rephrase objects to find
@@ -176,7 +185,10 @@ while True:
 
     # print(prompt)
     # ##--------------finished making new prompt
-    
+
+
+
+    #answer verification question---------------------------
     t0 = time.time()
 
     prompt= "Question: In this image, " + generated_text[0].lower() + generated_text[1:] + " Answer: "
@@ -191,7 +203,10 @@ while True:
     
 
     print(generated_text)
-    print("blip2 inference time "+ str(time.time()-t0))
+    print("answer verification question "+ str(time.time()-t0))
+    #finished answering---------------------------
+
+
 
     #clipseg--------------------------------------------
     if re.search(r'\byes\b', generated_text, flags=re.IGNORECASE):
@@ -255,7 +270,7 @@ while True:
 
 
         
-        print("clipseg inference time "+str(time.time()-t0)) #1.3s on cpu, 2.3s on gpu
+        print("clipseg inference time "+str(time.time()-t0)) #1.4s on cpu, 2.3s on gpu
 
         # plt.imshow(mask_img)
         plt.rcParams['keymap.quit'].append(' ') #default is q. now you can close with spacebar
