@@ -8,7 +8,7 @@
 <br/><br/>
 
 #### Tested on
-* NVIDIA TITAN V 12GB (6.7GB VRAM was observed to be used by blip2_clipseg)
+* NVIDIA TITAN V 12GB (6.7GB VRAM was observed to be used by `blip2_clipseg.py`)
 <br/><br/>
 
 #### blip2_clipseg.py
