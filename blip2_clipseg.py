@@ -16,6 +16,17 @@ from PIL import Image
 import requests
 ##from lavis.models import load_model_and_preprocess
 
+def swap_first_two_words(input_string):
+    words = input_string.split()
+    
+    if len(words) >= 2:
+        words[0], words[1] = words[1], words[0]
+        return ' '.join(words)
+    else:
+        return input_string
+
+
+
 
 t0 = time.time()
 from transformers import BlipProcessor, Blip2ForConditionalGeneration, CLIPSegProcessor, CLIPSegForImageSegmentation
@@ -29,6 +40,10 @@ with open(file_path, 'r') as file:
 print(img_path)
 
 image = Image.open(img_path)
+
+
+
+black_img = Image.open(r"C:\Users\kyanzhe\Downloads\prompt-to-mask-main\black.png")
 
 user_input = "What is this a picture of"
 ##user_input = input("Enter question:\n")
@@ -95,38 +110,6 @@ while True:
     print(img_path)
     image = Image.open(img_path).convert('RGB') #doesnt work with .avif
 
-
-
-    #generate verification question-------------------
-    t0 = time.time()
-    prompt = """
-    Instruction: find the man in the blue shirt
-    Question: Is there a man in a blue shirt?
-    Instruction: search this floor for people
-    Question: Are there people?
-    Instruction: Go ahead until the next junction
-    Question: Is there a traffic junction?
-    Instruction: go to the red car in the car park
-    Question: Is there a red car?
-    Instruction: """ + user_input + " Question: "
-
-    print(prompt)
-    
-    
-
-    inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
-    # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float32)
-
-    generated_ids = model.generate(**inputs)
-    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
-    
-
-    print(generated_text)
-    print("generate verification question "+ str(time.time()-t0))
-    #finish generating verification question------------------------
-
-
-
     #get search object-------------------
     t0 = time.time()
     prompt = """
@@ -154,7 +137,54 @@ while True:
     print(search_object)
     print("extract search object "+ str(time.time()-t0))
     #finish getting search object-----------------------
+
+
+    #generate verification question-------------------
+    t0 = time.time()
+    prompt = """
+    Question: the man in the blue shirt
+    Answer: a man in a blue shirt
+    Question: people
+    Answer: people
+    Question: junction
+    Answer: junction
+    Question: red car
+    Answer: a red car
+    Question: """ + search_object + """
+    Answer: """
+
+    prompt = """
+    Question: find the man in the blue shirt
+    Answer: there is a man in a blue shirt
+    Question: search this floor for people
+    Answer: there are people
+    Question: Go ahead until the next junction
+    Answer: there is a traffic junction
+    Question: go to the red car in the car park
+    Answer: there is a red car
+    Question: """ + user_input + " Answer: there "
+
+    print(prompt)
     
+    
+
+    # inputs = processor(images=image, text=prompt, return_tensors="pt").to(device, torch.float16)
+    inputs = processor(images=black_img, text=prompt, return_tensors="pt").to(device, torch.float16)
+
+
+    generated_ids = model.generate(**inputs)
+    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+    
+
+    print(generated_text)
+    print("generate verification question "+ str(time.time()-t0))
+    #finish generating verification question------------------------
+
+
+
+    
+    prompt = swap_first_two_words("there " + generated_text)
+    prompt = "In this image, " + prompt +"? Answer: "
     
 
 
@@ -191,7 +221,10 @@ while True:
     #answer verification question---------------------------
     t0 = time.time()
 
-    prompt= "Question: In this image, " + generated_text[0].lower() + generated_text[1:] + " Answer: "
+    print("\n")
+
+    # prompt= "Question: In this image, " + generated_text[0].lower() + generated_text[1:] + " Answer: "
+    # prompt = generated_text
 
     print(prompt)
 
@@ -206,6 +239,7 @@ while True:
     print("answer verification question "+ str(time.time()-t0))
     #finished answering---------------------------
 
+    print("\n")
 
 
     #clipseg--------------------------------------------
