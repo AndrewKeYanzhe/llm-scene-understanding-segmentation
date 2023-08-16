@@ -141,17 +141,6 @@ while True:
 
     #generate verification question-------------------
     t0 = time.time()
-    prompt = """
-    Question: the man in the blue shirt
-    Answer: a man in a blue shirt
-    Question: people
-    Answer: people
-    Question: junction
-    Answer: junction
-    Question: red car
-    Answer: a red car
-    Question: """ + search_object + """
-    Answer: """
 
     prompt = """
     Question: find the man in the blue shirt
