@@ -1,4 +1,4 @@
-# prompt-to-mask
+# Large language model (BLIP-2) scene understanding and segmentation (CLIPSeg)
 
 
 
